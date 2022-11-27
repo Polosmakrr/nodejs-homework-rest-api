@@ -48,8 +48,23 @@ const addUserValidation = (req, res, next) => {
   next();
 };
 
+const resendVerifycationCodeValidation = (req, res, next) => {
+  const schema = Joi.object({
+    email: Joi.string()
+      .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
+      .required(),
+  });
+  const validationResult = schema.validate(req.body);
+  if (validationResult.error) {
+    const { message } = validationResult.error.details[0];
+    return res.status(400).json({ message: `Error field: ${message}` });
+  }
+  next();
+};
+
 module.exports = {
   addPostValidation,
   addFavoriteValidation,
   addUserValidation,
+  resendVerifycationCodeValidation,
 };
